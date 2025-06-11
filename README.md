@@ -14,32 +14,42 @@ The flow of incremental code development followed :
 
 ---
 
-## How to Clone this Repository
+## Getting Started
 
-To get started, please refer to the comprehensive [Git Setup Guide](README-git-setup.md) for detailed instructions on cloning this repository.
+To get a copy of this project up and running on your local machine, follow these simple steps:
 
-## Setup Instructions
+### Prerequisites
 
-This code assumes you have an Oracle Database instance up and running.
-<Will post  Link to another document / video / blog for Oracle Database setup>
+* **Git:** You need Git installed on your system. If you don't have it, you can download it from [git-scm.com](https://git-scm.com/downloads) or install it via your operating system's package manager (e.g., `sudo apt install git` on Ubuntu, `brew install git` on macOS).
+* **SSH Key (Recommended for GitHub):** For more secure and convenient access to GitHub, it's recommended to set up an SSH key. If you haven't done this before, GitHub provides excellent guides:
+    * [Generating a new SSH key and adding it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+    * [Adding your SSH key to your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+* **Oracle Database:** This code assumes you have an Oracle Database instance up and running. (A link to another document/video/blog for Oracle Database setup will be provided).
 
-### 1. Get the Project
+### Cloning the Repository
 
-Start by cloning the repository to your local machine.
+1.  **Open your terminal or command prompt.**
+2.  **Navigate to the directory** where you want to save the project. For example: `cd ~/Documents/GitHub` (you can create this directory if it doesn't exist: `mkdir -p ~/Documents/GitHub`).
+3.  **Clone the repository** using one of the following methods:
 
-1.  **Clone the repository**
+    **Option A: Using SSH (Recommended)**
+    If you have set up your SSH key with GitHub, this method is more secure and generally easier for repeated access.
     ```bash
-    git clone https://[https://github.com/your-username/genai-db-samples.git](https://github.com/your-username/genai-db-samples.git)
-    # Replace 'your-username' with the actual GitHub username or organization
-    # if this repository is hosted publicly.
+    git clone git@github.com:sam-gamare/genai-db-samples.git
     ```
 
-2.  **Navigate into the project directory**
+    **Option B: Using HTTPS**
+    If you haven't set up SSH keys, or prefer HTTPS, you can use this method. You might be prompted for your GitHub username and password (or a Personal Access Token if you have 2FA enabled).
+    ```bash
+    git clone [https://github.com/sam-gamare/genai-db-samples.git](https://github.com/sam-gamare/genai-db-samples.git)
+    ```
+4.  **Navigate into the cloned directory:**
     ```bash
     cd genai-db-samples
     ```
 
-### 2. Project Setup and Virtual Environment
+
+### Project Setup and Virtual Environment
 
 Next, create a Python virtual environment to manage dependencies for this project.
 
@@ -53,7 +63,7 @@ Next, create a Python virtual environment to manage dependencies for this projec
     source .venv/bin/activate
     ```
 
-### 3. Install Dependencies
+### Install Dependencies
 
 Now that your virtual environment is active, install the necessary Python packages:
 
@@ -64,7 +74,7 @@ pip install oracledb dotenv cx_Oracle -q
 ```
 
 
-### 4. Configure Environment Variables
+### Configure Environment Variables
 
 Create a file named `.env` in the root of your project directory to store your database connection details securely.
 
@@ -79,13 +89,13 @@ Create a file named `.env` in the root of your project directory to store your d
 
 3.  **Replace placeholders**: **Crucially, replace `"YourPassword"`, `<MachineName>`, and `<PDBName>` with your actual database password, machine name (or IP address), and Pluggable Database (PDB) name.** For example, `DB_DSN="localhost:1521/FREEPDB1"`.
 
-### 5. Database Users
+### Database Users
 
 Ensure you can log in as the following users in your Oracle Database:
 * **`rw_user`**: For read/write operations (e.g., creating tables, loading data).
 * **`ro_user`**: For read-only operations.
 
-### 6. Create Table
+### Create Table
 
 1.  **Log in as `rw_user`**: Use `sqlplus` to connect to your Oracle database.
     ```bash
@@ -99,14 +109,16 @@ Ensure you can log in as the following users in your Oracle Database:
     @create-table-electric-vehicles.sql
     ```
 
-### 7. Download Data
+### Download Data
 
 1.  **Get the data**: Download the electric vehicle population data from the official source:
     [https://catalog.data.gov/dataset/electric-vehicle-population-data](https://catalog.data.gov/dataset/electric-vehicle-population-data)
 
 2.  **Save as CSV**: Make sure to save the downloaded data as a **.csv** file in your `genai-db-samples` directory.
 
-### 8. Import Data
+### Import Data
+
+Ideally execute this on the machine where Oracle DB is installed to make this faster and also supporting libraries are easily available.
 
 1.  **Use SQL*Loader**: Import the downloaded CSV data into your Oracle database using the `sqlldr` utility.
     ```bash
@@ -114,7 +126,7 @@ Ensure you can log in as the following users in your Oracle Database:
     ```
     (Ensure `Load_Electric_Vehicle_Population_Data.csv.ctl` is correctly configured for your CSV file and located in the same directory where you run the command).
 
-### 9. Test Database Connection and Data
+### Test Database Connection and Data
 
 Finally, run the Python script to verify your database connection and confirm that data has been loaded correctly.
 
@@ -124,7 +136,7 @@ Finally, run the Python script to verify your database connection and confirm th
     ```
     This script should connect to your Oracle database using the details from your `.env` file and display a few rows from the `ElectricVehicles` table to the console.
 
-### 10. Test Langchain setup with VertexAI using Gemini 
+### Test Langchain setup with VertexAI using Gemini
 
 Run the python script to check if we can use VertexAI API using Gemini model. We also have a limited RAG function to inject additional data beyond what the model has been trained on. Remember this does not connect to Google Search for grounding data. We will do that at some point in the future
 
@@ -133,4 +145,5 @@ Run the python script to check if we can use VertexAI API using Gemini model. We
     python src/02-langchain-gemini-intro/simple_langchain_gemini.py
     ```
     This script is asking for some basic information to the LLM, like what is the capital of Brazil. This the LLM should know as it has been pre-trained. However we are also injected our RAG data specifically. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
+
 
