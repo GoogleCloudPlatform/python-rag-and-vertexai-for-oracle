@@ -1,3 +1,10 @@
+#This project is intended for demonstration purposes only. It is not
+#intended for use in a production environment.
+#
+#This is not an officially supported Google product. This project is not
+#eligible for the [Google Open Source Software Vulnerability Rewards
+#Program](https://bughunters.google.com/open-source-security).
+#
 # genai-db-samples
 # Author: Sam Gamare [ Google ]
 # Initiated on: Jun 10, 2025
@@ -140,10 +147,10 @@ Finally, run the Python script to verify your database connection and confirm th
 
 Run the python script to check if we can use VertexAI API using Gemini model. We also have a limited RAG function to inject additional data beyond what the model has been trained on. Remember this does not connect to Google Search for grounding data. We will do that at some point in the future
 
-1. ** Execute the script **
+1. **Execute the script **
     ```bash
     python src/02-langchain-gemini-intro/simple_langchain_gemini.py
     ```
-    This script is asking for some basic information to the LLM, like what is the capital of Brazil. This the LLM should know as it has been pre-trained. However we are also injected our RAG data specifically. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
+    This script is asking for some basic information to the LLM, like what is the capital of Brazil. This obviously the LLM should know as it has been pre-trained. However we are also going to inject our sample RAG data explicitly. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
 
 
