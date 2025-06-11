@@ -14,6 +14,10 @@ The flow of incremental code development followed :
 
 ---
 
+## How to Clone this Repository
+
+To get started, please refer to the comprehensive [Git Setup Guide](README-git-setup.md) for detailed instructions on cloning this repository.
+
 ## Setup Instructions
 
 This code assumes you have an Oracle Database instance up and running.
