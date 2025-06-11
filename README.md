@@ -147,7 +147,7 @@ Finally, run the Python script to verify your database connection and confirm th
 
 Run the python script to check if we can use VertexAI API using Gemini model. We also have a limited RAG function to inject additional data beyond what the model has been trained on. Remember this does not connect to Google Search for grounding data. We will do that at some point in the future
 
-1. **Execute the script **
+1.  **Execute the test script**
     ```bash
     python src/02-langchain-gemini-intro/simple_langchain_gemini.py
     ```
