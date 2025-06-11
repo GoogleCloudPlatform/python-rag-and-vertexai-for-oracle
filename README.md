@@ -2,16 +2,15 @@
 # Author: Sam Gamare [ Google ]
 # Initiated on: Jun 10, 2025
 
-This repository contains samples for interacting with Oracle database using generative AI. Its a incremental follow along as I wrote the code.
+The content is designed to be an incremental follow-along, reflecting the process by which the code was developed
 
 The flow of incremental code development followed :
-
-* Basic code to test the database connection
-* Set up a Langchain invocation to VertexAI APIs using Gemini
-* Include Database call to ElectricVehicles explicitly using Langchain Tool, where it consumes the limited set of data (hard coded)
-* Write a command line chatbot so we can ask incremental questions
-* Fine tune prompt to pass dynamic arguments to the function
-* Include another Tool for latest currency conversion
+* Establishing Database Baseline: Initiated with basic code to confirm database connection functionality.
+* Connecting to Generative AI: Set up a LangChain invocation layer to interact with Vertex AI APIs powered by Gemini.
+* First Database Tool (Proof of Concept): Integrated a LangChain Tool for direct calls to the ElectricVehicles database, starting with a limited, hardcoded data consumption to prove the concept.
+* Enabling User Interaction: Developed a command-line chatbot to facilitate asking incremental questions.
+* Enhancing Tool Usability: Fine-tuned prompts to allow for dynamic arguments to be passed effectively to the integrated functions.
+* Expanding Toolset: Included another LangChain Tool to provide real-time currency conversion capabilities.
 
 ---
 
