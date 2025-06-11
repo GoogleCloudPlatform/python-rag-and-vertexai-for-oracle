@@ -124,13 +124,3 @@ Finally, run the Python script to verify your database connection and confirm th
     ```
     This script should connect to your Oracle database using the details from your `.env` file and display a few rows from the `ElectricVehicles` table to the console.
 
-### 10. Test Langchain setup with VertexAI using Gemini 
-
-Run the python script to check if we can use VertexAI API using Gemini model. We also have a limited RAG function to inject additional data beyond what the model has been trained on. Remember this does not connect to Google Search for grounding data. We will do that at some point in the future
-
-1. ** Execute the script **
-    ```bash
-    python test-langchain-gemini.py
-    ```
-    This script is asking for some basic information to the LLM, like what is the capital of Brazil. This the LLM should know as it has been pre-trained. However we are also injected our RAG data specifically. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
-
