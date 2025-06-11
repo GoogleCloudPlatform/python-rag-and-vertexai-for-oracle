@@ -9,6 +9,7 @@ The flow of incremental code development followed :
 * Basic code to test the database connection
 * Set up a Langchain invocation to VertexAI APIs using Gemini
 * Include Database call to ElectricVehicles explicitly using Langchain Tool, where it consumes the limited set of data (hard coded)
+* Write a command line chatbot so we can ask incremental questions
 * Fine tune prompt to pass dynamic arguments to the function
 * Include another Tool for latest currency conversion
 
