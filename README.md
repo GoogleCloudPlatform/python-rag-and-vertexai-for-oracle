@@ -57,6 +57,8 @@ Now that your virtual environment is active, install the necessary Python packag
 pip install langchain-google-vertexai -q
 pip install google-generativeai langchain langchain-google-genai -q
 pip install oracledb dotenv cx_Oracle -q
+```
+
 
 ### 4. Configure Environment Variables
 
