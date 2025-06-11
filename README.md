@@ -120,7 +120,7 @@ Finally, run the Python script to verify your database connection and confirm th
 
 1.  **Execute the test script**
     ```bash
-    python test-db-connection.py
+    python src/01-db-connection/db_connection_example.py
     ```
     This script should connect to your Oracle database using the details from your `.env` file and display a few rows from the `ElectricVehicles` table to the console.
 
@@ -130,7 +130,7 @@ Run the python script to check if we can use VertexAI API using Gemini model. We
 
 1. ** Execute the script **
     ```bash
-    python test-langchain-gemini.py
+    python src/02-langchain-gemini-intro/simple_langchain_gemini.py
     ```
     This script is asking for some basic information to the LLM, like what is the capital of Brazil. This the LLM should know as it has been pre-trained. However we are also injected our RAG data specifically. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
 
