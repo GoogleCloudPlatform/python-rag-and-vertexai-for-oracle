@@ -1,19 +1,3 @@
-"""
- Copyright 2025 Google LLC
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- """
-
 import os
 from langchain_google_vertexai import ChatVertexAI # <-- NEW IMPORT
 
@@ -31,7 +15,7 @@ def research_document_store(query: str) -> str:
     """
     print(f"\n--- Tool Call: research_document_store with query: '{query}' ---")
     query = query.lower()
-
+    
     if "python" in query and "flask" in query:
         return "Flask is a lightweight Python web framework for building web applications. It's known for its simplicity and flexibility, making it a good choice for smaller projects and APIs. It uses Jinja2 for templating and Werkzeug for WSGI utilities."
     elif "gemini api" in query or "google ai studio" in query:
@@ -103,7 +87,7 @@ def get_gemini_response(prompt_text, chat_history=None):
                 lc_chat_history.append(HumanMessage(content=turn['parts'][0]['text']))
             elif turn['role'] == 'model':
                 lc_chat_history.append(AIMessage(content=turn['parts'][0]['text']))
-
+    
     try:
         response = agent_executor.invoke({
             "input": prompt_text,
@@ -117,7 +101,7 @@ def get_gemini_response(prompt_text, chat_history=None):
         updated_history.append({"role": "model", "parts": [{"text": response_text}]})
 
         return response_text, updated_history
-
+    
     except Exception as e:
         print(f"LangChain Agent Error: {e}")
         return f"Error processing your request: {e}. Please try again.", chat_history
@@ -127,7 +111,7 @@ if __name__ == '__main__':
     print("Ensure your VM's service account has 'Vertex AI User' role.")
     # For local testing without ADC setup, you can set GOOGLE_API_KEY or
     # run `gcloud auth application-default login`
-
+    
     current_chat_history = []
 
     print("\n--- Test 1: General knowledge ---")
