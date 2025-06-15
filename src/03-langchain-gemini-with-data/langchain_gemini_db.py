@@ -40,6 +40,8 @@ dsn = os.getenv("DB_DSN")
 dbhost = os.getenv("DB_HOST")
 dbport = os.getenv("DB_PORT")
 dbservice= os.getenv("DB_SERVICE_NAME")
+projectid = os.getenv("GCP_PROJECT_ID")
+gcpregion = os.getenv("GCP_REGION")
 
 print(f"Attempting to connect as user: {dbuser}")
 
@@ -95,8 +97,8 @@ def setup_langchain_agent():
     # project_id = os.getenv("GCP_PROJECT_ID") # e.g., if you have a project ID env var
     # location = os.getenv("GCP_REGION", "us-central1") # e.g., your Vertex AI region
 
-    project_id = os.getenv("GCP_PROJECT_ID", "symbolic-gecko-389722") # <--- SET THIS
-    location = os.getenv("GCP_REGION", "us-central1") # <--- Or your preferred region
+    project_id = projectid
+    location = gcpregion
 
 
     llm = ChatVertexAI(

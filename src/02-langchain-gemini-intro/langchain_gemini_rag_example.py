@@ -22,6 +22,21 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.tools import tool
 
+import os
+from dotenv import load_dotenv
+
+#Load values from .env file
+load_dotenv()
+
+print(f"Looking for .env in: {os.path.join(os.getcwd(), '.env')}")
+
+# --- Configuration ---
+# Get connection details from environment variables
+# os.getenv() retrieves the value of the environment variable.
+# It returns None if the variable is not found, so good to provide defaults or handle.
+projectid = os.getenv("GCP_PROJECT_ID")
+gcpregion = os.getenv("GCP_REGION")
+
 # --- Dummy RAG Tool Implementation  ---
 @tool
 def research_document_store(query: str) -> str:
@@ -58,8 +73,8 @@ def setup_langchain_agent():
     # project_id = os.getenv("GCP_PROJECT_ID") # e.g., if you have a project ID env var
     # location = os.getenv("GCP_REGION", "us-central1") # e.g., your Vertex AI region
 
-    project_id = os.getenv("GCP_PROJECT_ID", "symbolic-gecko-389722") # <--- SET THIS
-    location = os.getenv("GCP_REGION", "us-central1") # <--- Or your preferred region
+    project_id = projectid
+    location = gcpregion
 
 
     llm = ChatVertexAI(
