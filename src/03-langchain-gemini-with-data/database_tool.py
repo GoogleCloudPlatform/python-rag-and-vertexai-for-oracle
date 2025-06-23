@@ -58,7 +58,7 @@ def get_electric_vehicles_data(query: str = None) -> str:
         # Hardcoded query for proof of concept
         # You might want to select specific columns or add a WHERE clause
         # For POC, let's get a few rows and specific columns to keep output manageable
-        cursor.execute("SELECT 'Model: ' || MODEL || ', Type: ' || VEHICLE_TYPE || ', Range: ' || ELECTRIC_RANGE || ' miles' FROM ElectricVehicles WHERE ROWNUM <= 5")
+        cursor.execute("SELECT * FROM ElectricVehicles WHERE ROWNUM <= 5")
 
         for row in cursor:
             results.append(str(row[0])) # Convert tuple to string

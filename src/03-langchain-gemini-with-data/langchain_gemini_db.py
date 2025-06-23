@@ -25,7 +25,7 @@ import os
 from dotenv import load_dotenv
 
 # --- NEW IMPORT for your database tool ---
-from src.03_database_tool_poc.database_tool import get_electric_vehicles_data
+from database_tool import get_electric_vehicles_data
 # Make sure the path matches where you save database_tool.py
 
 #Load values from .env file
