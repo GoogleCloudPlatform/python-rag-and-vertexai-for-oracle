@@ -26,7 +26,6 @@ from dotenv import load_dotenv
 
 # --- UPDATED IMPORTS for your database tools ---
 # Make sure to import both tools from database_tool.py
-from database_tool import get_electric_vehicles_data # OLD - will replace with query_electric_vehicles
 from database_tool import get_table_schema, query_electric_vehicles # NEW
 
 #Load values from .env file
