@@ -15,15 +15,18 @@
  """
 
 import os
-from langchain_google_vertexai import ChatVertexAI # <-- NEW IMPORT
-
+from langchain_google_vertexai import ChatVertexAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.tools import tool
+# from langchain.tools import tool # We will import tools from our new module
 
 import os
 from dotenv import load_dotenv
+
+# --- NEW IMPORT for your database tool ---
+from src.03_database_tool_poc.database_tool import get_electric_vehicles_data
+# Make sure the path matches where you save database_tool.py
 
 #Load values from .env file
 load_dotenv()
@@ -31,42 +34,19 @@ load_dotenv()
 print(f"Looking for .env in: {os.path.join(os.getcwd(), '.env')}")
 
 # --- Configuration ---
-# Get connection details from environment variables
-# os.getenv() retrieves the value of the environment variable.
-# It returns None if the variable is not found, so good to provide defaults or handle.
-dbuser = os.getenv("DB_USER")
-dbpassword = os.getenv("DB_PASSWORD")
-dsn = os.getenv("DB_DSN")
-dbhost = os.getenv("DB_HOST")
-dbport = os.getenv("DB_PORT")
-dbservice= os.getenv("DB_SERVICE_NAME")
 projectid = os.getenv("GCP_PROJECT_ID")
 gcpregion = os.getenv("GCP_REGION")
 
-print(f"Attempting to connect as user: {dbuser}")
+# --- Dummy RAG Tool Implementation (Keep for now or remove if only testing DB tool) ---
+# You can decide to remove this or keep it, depending on if you want both tools available.
+# For simplicity in this step, let's keep it but focus on the new DB tool.
+from langchain.tools import tool # Re-import tool decorator if not used elsewhere
 
-# You can still use getpass if you want to fall back to interactive input
-# if the environment variable is not set.
-if not dbpassword:
-    dbpassword = getpass.getpass("Enter DB password (not found in .env or env var): ")
-
-# --- Input Validation (Recommended) ---
-if not all([dbuser, dbpassword, dsn, dbhost, dbport, dbservice]):
-    print("Error: Missing one or more database connection environment variables.")
-    print("Please ensure DB_USER, DB_PASSWORD, HOST, PORT and SERVICE  are set in your .env file or environment.")
-    exit(1) # Exit the script if critical info is missing
-
-# --- Connection and Query Execution ---
-connection = None
-cursor = None
-
-
-# --- Dummy RAG Tool Implementation  ---
 @tool
 def research_document_store(query: str) -> str:
     """
     Searches an internal document store or knowledge base for information.
-    ... (rest of the dummy implementation) ...
+    ... (rest of the dummy implementation from langchain_gemini_rag_example.py) ...
     """
     print(f"\n--- Tool Call: research_document_store with query: '{query}' ---")
     query = query.lower()
@@ -91,28 +71,22 @@ def setup_langchain_agent():
     This function leverages Application Default Credentials (ADC).
     Ensure your GCE VM's service account has the 'Vertex AI User' role.
     """
-    # *** KEY CHANGE: Using ChatVertexAI for Vertex AI integration ***
-    # You might need to specify 'project' and 'location' explicitly
-    # if ADC isn't inferring them correctly, or if your model is in a different project/region.
-    # project_id = os.getenv("GCP_PROJECT_ID") # e.g., if you have a project ID env var
-    # location = os.getenv("GCP_REGION", "us-central1") # e.g., your Vertex AI region
-
     project_id = projectid
     location = gcpregion
 
-
     llm = ChatVertexAI(
-        model_name="gemini-2.0-flash", # Use model_name for ChatVertexAI
+        model_name="gemini-2.0-flash",
         temperature=0,
         # project=project_id, # Uncomment and set if needed
         # location=location,  # Uncomment and set if needed
     )
 
-    tools = [research_document_store, get_electric_vehicle_data_dynamic]
+    # --- KEY CHANGE: Add your new database tool here ---
+    tools = [research_document_store, get_electric_vehicles_data]
 
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are an AI assistant. You have access to a document store tool. Use it to answer questions that require specific, factual information from internal documents. If a question is general knowledge, answer directly. If you use a tool, provide the tool's response in your answer."),
+            ("system", "You are an AI assistant. You have access to a document store tool and an Oracle Database tool. Use the database tool to answer questions about electric vehicles. Use the document store for other internal document questions. If a question is general knowledge, answer directly. If you use a tool, provide the tool's response in your answer."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -124,64 +98,6 @@ def setup_langchain_agent():
 
     return agent_executor
 
-import oracledb
-import json
-
-# --- SQLAlchemy Imports ---
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-import json
-from datetime import datetime # Import datetime
-from decimal import Decimal
-
-# --- SQLAlchemy Database Configuration (outside the function for reusability) ---
-# Replace with your actual database details
-DB_USER = dbuser
-DB_PASSWORD = dbpassword
-DB_HOST = dbhost
-DB_PORT = dbport
-DB_SERVICE_NAME = dbservice
-
-# Oracle DSN format for cx_Oracle:
-# oracle+cx_oracle://user:password@host:port/?service_name=servicename
-DATABASE_URL = f"oracle+cx_oracle://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/?service_name={DB_SERVICE_NAME}"
-
-# Create the SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
-
-# Create a configured "Session" class
-Session = sessionmaker(bind=engine)
-
-@tool
-def get_electric_vehicle_data_dynamic(query: str) -> str: # <-- Ensure 'query: str' is here
-    """
-    Retrieves electric vehicle data from the database using a dynamic SQL query.
-    The 'query' parameter should be a valid SQL SELECT statement targeting the ElectricVehicles table.
-    Example query: 'SELECT * FROM ElectricVehicles WHERE Make = \"Tesla\"'
-    """
-    session = Session()
-    try:
-        print(f"\n--- Tool Call: get_electric_vehicle_data_dynamic with query: '{query}' ---")
-
-        # Execute the dynamic SQL query
-        result = session.execute(text(query))
-
-        # Fetch column names
-        column_names = result.keys()
-
-        electric_data = []
-        for row in result:
-            # Create a dictionary for each row to include column names
-            row_dict = {col: value for col, value in zip(column_names, row)}
-            electric_data.append(row_dict)
-
-        return json.dumps(electric_data, indent=2)
-
-    except Exception as e:
-        print(f"SQLAlchemy Error: {e}")
-        return f"An error occurred while querying the database: {e}. Please check your SQL query."
-    finally:
-        session.close()
 
 def get_gemini_response(prompt_text, chat_history=None):
     """
@@ -219,11 +135,10 @@ def get_gemini_response(prompt_text, chat_history=None):
         print(f"LangChain Agent Error: {e}")
         return f"Error processing your request: {e}. Please try again.", chat_history
 
+
 if __name__ == '__main__':
-    print("Testing LangChain Agent with RAG Tool using Vertex AI integration...")
+    print("Testing LangChain Agent with RAG and Database Tools using Vertex AI integration...")
     print("Ensure your VM's service account has 'Vertex AI User' role.")
-    # For local testing without ADC setup, you can set GOOGLE_API_KEY or
-    # run `gcloud auth application-default login`
 
     current_chat_history = []
 
@@ -239,14 +154,14 @@ if __name__ == '__main__':
     res2, current_chat_history = get_gemini_response(user_input2, current_chat_history)
     print(f"Bot: {res2}")
 
-    print("\n--- Test 3: Another RAG tool question with existing history ---")
-    user_input3 = "What is RAG in AI?"
+    print("\n--- Test 3: Question requiring the new Database Tool (Hardcoded POC) ---")
+    user_input3 = "Can you get some data about electric vehicles?"
     print(f"User: {user_input3}")
     res3, current_chat_history = get_gemini_response(user_input3, current_chat_history)
     print(f"Bot: {res3}")
 
-    print("\n--- Test 4: How many Electric Vehicle Records do you have ? ---")
-    user_input4 = "How many Electric Vehicle Records do you have ?"
+    print("\n--- Test 4: Another RAG tool question with existing history ---")
+    user_input4 = "What is RAG in AI?"
     print(f"User: {user_input4}")
     res4, current_chat_history = get_gemini_response(user_input4, current_chat_history)
     print(f"Bot: {res4}")
