@@ -154,3 +154,27 @@ Run the python script to check if we can use VertexAI API using Gemini model. We
     This script is asking for some basic information to the LLM, like what is the capital of Brazil. This obviously the LLM should know as it has been pre-trained. However we are also going to inject our sample RAG data explicitly. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
 
 
+
+
+### Test Langchain setup with VertexAI using Gemini, but retrieve data using Oracle database
+
+Run the python script to check if we can use VertexAI API using Gemini model and also retrieve data from Oracle database. 
+
+1.  **Execute the test script**
+    ```bash
+    python src/03-langchain-gemini-with-data/langchain_gemini_db.py
+    ```
+    This script is asking for some basic information to the LLM, like what is the capital of Brazil. This obviously the LLM should know as it has been pre-trained. However we are also going to inject our sample RAG data explicitly. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
+
+
+### Test command line chatbot
+
+Run the python script to check if we can use VertexAI API using Gemini model and also retrieve data from Oracle database. Note for simplicity we have copied all the files explicitly in each sub-example
+
+1.  **Execute the test script**
+    ```bash
+    python src/04-cli-chatbo/cli_chatbot.py
+    ```
+    This chatbot should allow us to interactively type questions and get answers from the chatbot. 
+
+
