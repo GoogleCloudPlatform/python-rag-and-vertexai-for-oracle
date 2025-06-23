@@ -178,3 +178,30 @@ Run the python script to check if we can use VertexAI API using Gemini model and
     This chatbot should allow us to interactively type questions and get answers from the chatbot. 
 
 
+
+### Enhancing Tool Usability (Dynamic Arguments & Schema Retrieval)
+
+This step significantly enhances the database integration by:
+* Implementing dynamic queries to the `ElectricVehicles` table using SQLAlchemy.
+* Introducing a new `get_table_schema` tool, allowing the LangChain agent to dynamically retrieve table structures.
+* Updating the LLM's prompt to guide it to use `get_table_schema` before attempting complex data queries, ensuring it understands the available columns for filtering.
+
+1.  **Execute the test script for combined tools**
+    ```bash
+    python src/05-enhance-db-prompt/langchain_gemini_db.py
+    ```
+    This script will now demonstrate:
+    * Asking about general knowledge.
+    * Using the RAG tool.
+    * **New:** Asking about "What columns are in the ElectricVehicles table?" which should trigger the `get_table_schema` tool.
+    * **New:** Asking for specific data like "Get me the Model and Make of 3 electric vehicles that are Teslas." which should trigger the `query_electric_vehicles` tool with dynamic arguments.
+
+2.  **Use the command-line chatbot**
+    ```bash
+    python src/05-enhance-db-prompt/cli_chatbot.py
+    ```
+    Interact with the chatbot. Try asking questions that require database interaction, such as:
+    * "What information can you give me about electric vehicles?" (Might trigger schema or initial few rows)
+    * "Show me the columns for the ElectricVehicles table."
+    * "Find all electric vehicles made by Nissan."
+    * "List 10 electric vehicles with 'LEAF' in their model name."
