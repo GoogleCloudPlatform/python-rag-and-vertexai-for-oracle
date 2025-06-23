@@ -37,6 +37,12 @@ DATABASE_URL = f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_DSN}"
 _engine = None # Global engine to reuse connection pool
 _metadata = MetaData() # Global metadata object
 
+
+# Add this global variable or get it from .env for the schema owner
+# IMPORTANT: This should be the actual username that owns the table in Oracle,
+TABLE_OWNER_SCHEMA = os.getenv("DB_TABLE_OWNER_SCHEMA") # Add this line or similar
+
+
 def get_engine():
     """Initializes and returns a SQLAlchemy engine."""
     global _engine
@@ -58,7 +64,7 @@ def get_table_reflection(table_name: str) -> Table:
     """Reflects a table from the database and returns its SQLAlchemy Table object."""
     engine = get_engine()
     try:
-        table = Table(table_name, _metadata, autoload_with=engine)
+        table = Table(table_name.upper(), _metadata, autoload_with=engine, schema=TABLE_OWNER_SCHEMA)
         return table
     except exc.NoSuchTableError:
         raise ValueError(f"Table '{table_name}' does not exist in the database.")
@@ -84,6 +90,7 @@ def execute_read_query(table_name: str, conditions: str = None, limit: int = 5) 
     engine = get_engine()
     connection: Connection = None
     try:
+        table_name = table_name.upper() # Ensure the table name is uppercase for Oracle
         table = get_table_reflection(table_name)
         connection = engine.connect()
 

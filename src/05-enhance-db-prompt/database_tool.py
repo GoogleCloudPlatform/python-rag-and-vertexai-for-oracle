@@ -44,6 +44,7 @@ def query_electric_vehicles(conditions: str = None, limit: int = 5) -> str:
     # For this POC, we're assuming the table name is always 'ElectricVehicles'.
     # In a more advanced scenario, you might have a tool that takes table_name as an arg.
     table_name = "ElectricVehicles"
+    table_name = table_name.upper() # Ensure the table name is uppercase for Oracle
     return execute_read_query(table_name, conditions, limit)
 
 # No __main__ block needed here as these are just tool definitions.
