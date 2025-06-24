@@ -18,6 +18,7 @@ The flow of incremental code development followed :
 * Enabling User Interaction: Developed a command-line chatbot to facilitate asking incremental questions.
 * Enhancing Tool Usability: Fine-tuned prompts to allow for dynamic arguments to be passed effectively to the integrated functions.
 * Expanding Toolset: Included another LangChain Tool to provide real-time currency conversion capabilities.
+* Dynamic Discovery of tables
 
 ---
 
@@ -203,5 +204,27 @@ This step significantly enhances the database integration by:
     Interact with the chatbot. Try asking questions that require database interaction, such as:
     * "What information can you give me about electric vehicles?" (Might trigger schema or initial few rows)
     * "Show me the columns for the ElectricVehicles table."
-    * "Find all electric vehicles made by Nissan."
+    * "Find how many electric vehicles made by Nissan."
     * "List 10 electric vehicles with 'LEAF' in their model name."
+
+
+### Introducing Dynamic Discovery of all tables & Schema Retrieval
+
+This step significantly enhances the database integration by:
+* Implementing function to identify all tables using SQLAlchemy list_all_tables.
+* Adding additional meta data to enrich each table and its meaning with table_metadata.json
+* Customized the LLM's prompt to guide it to use this data to attempting complex data queries, ensuring it understands the available columns for filtering.
+
+1.  **Use the command-line chatbot**
+    ```bash
+    python src/06-multi-table-db/cli_chatbot.py
+    ```
+    Interact with the chatbot. Try asking questions that require database interaction, such as:
+    * "What information can you give me about electric vehicles?" (Might trigger schema or initial few rows)
+    * "Show me the columns for the ElectricVehicles table."
+    * "Find how many electric vehicles made by Nissan."
+    * "List 10 electric vehicles with 'LEAF' in their model name."
+    * "Are there specific months when more people ride? Provide count please"
+    * "How many citi bike ride records do you have ?"
+    * "What is the earliest dates you have for Stock Quotes?"
+    * "What was the price of QQQ on that date ?"
