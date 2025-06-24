@@ -1,3 +1,4 @@
+# database_tool.py
 """
  Copyright 2025 Google LLC
 
@@ -19,9 +20,8 @@ from langchain.tools import tool
 import logging
 
 # Import the new database utilities
-# MODIFIED: Added get_engine import for the new count_electric_vehicles tool
-from database_utils import get_table_schema_string, execute_read_query, get_engine
-from sqlalchemy import text # ADDED: Import text for raw SQL queries
+from database_utils import get_table_schema_string, get_engine # Only need get_engine now
+from sqlalchemy import text # Still need text for raw SQL queries
 
 logger = logging.getLogger(__name__)
 
@@ -37,41 +37,79 @@ def get_table_schema(table_name: str) -> str:
     return get_table_schema_string(table_name)
 
 @tool
-def query_electric_vehicles(conditions: str = None, limit: int = 5) -> str:
+def query_database(
+    table_name: str,
+    select_columns: str = "*",
+    conditions: str = None,
+    group_by_columns: str = None,
+    order_by_columns: str = None,
+    limit: int = None
+) -> str:
     """
-    Queries the electricvehicles table in the Oracle Database.
-    Use this tool to get specific data about electric vehicles.
-    'conditions' is an optional SQL WHERE clause (e.g., "MODEL = 'Tesla Model 3' AND CITY = 'Seattle'").
-    'limit' is an optional integer to limit the number of rows returned (defaults to 5).
-    Ensure you know the table schema before constructing complex conditions.
-    The table name is 'electricvehicles' (lowercase).
-    """
-    table_name = "electricvehicles"
+    Executes a flexible read query on the specified database table.
+    This tool allows for dynamic construction of SQL queries including SELECT, WHERE, GROUP BY, and ORDER BY clauses.
 
-    logger.debug(f"Tool Call: query_electric_vehicles with conditions: '{conditions}', limit: {limit}")
-    logger.debug(f"Debug: query_electric_vehicles is using table_name: '{table_name}'")
-    return execute_read_query(table_name, conditions, limit)
+    Args:
+        table_name (str): The name of the table to query (e.g., 'electricvehicles').
+        select_columns (str): A comma-separated list of columns to select, including aggregate functions (e.g., 'MAKE, COUNT(*) AS MakeCount'). Defaults to '*'.
+        conditions (str): An optional SQL WHERE clause (e.g., "UPPER(COUNTY) = UPPER('King') AND MODEL LIKE 'Tesla%'").
+        group_by_columns (str): An optional comma-separated list of columns for the GROUP BY clause (e.g., 'MAKE'). Required if aggregate functions are used in select_columns.
+        order_by_columns (str): An optional comma-separated list of columns for the ORDER BY clause (e.g., 'MakeCount DESC').
+        limit (int): An optional integer to limit the number of rows returned.
 
-@tool
-def count_electric_vehicles() -> str:
+    Returns:
+        str: Results as a formatted string, typically a Markdown table.
     """
-    Returns the total number of records in the electricvehicles table.
-    Use this tool to get a count of all electric vehicles without retrieving actual data.
-    """
-    logger.debug("Tool Call: count_electric_vehicles")
-    engine = get_engine() # Get the SQLAlchemy engine
+    logger.debug(f"Tool Call: query_database - Table: {table_name}, Select: {select_columns}, Conditions: {conditions}, GroupBy: {group_by_columns}, OrderBy: {order_by_columns}, Limit: {limit}")
+
+    engine = get_engine()
     connection = None
     try:
         connection = engine.connect()
-        # Explicitly query the count for the 'electricvehicles' table
-        # Assuming 'electricvehicles' is the correct unquoted, lowercase table name in Oracle
-        result = connection.execute(text(f"SELECT COUNT(*) FROM electricvehicles"))
-        count = result.scalar() # Get the single scalar result (the count)
-        logger.info(f"Total count for electricvehicles: {count}")
-        return f"The total number of electric vehicle records is: {count}"
+
+        # Start building the query string
+        query_string = f"SELECT {select_columns} FROM {table_name}"
+
+        if conditions:
+            query_string += f" WHERE {conditions}"
+
+        if group_by_columns:
+            query_string += f" GROUP BY {group_by_columns}"
+
+        if order_by_columns:
+            query_string += f" ORDER BY {order_by_columns}"
+
+        # For Oracle's ROWNUM for limiting after ordering, we need a subquery
+        if limit is not None and limit > 0:
+            query_string = f"SELECT * FROM ({query_string}) WHERE ROWNUM <= {limit}"
+
+        logger.debug(f"Executing dynamic SQL query: {query_string}")
+
+        # Execute the query (assuming no complex bind parameters for simplicity, but for production
+        # parameterized queries are safer for variable values within conditions)
+        result = connection.execute(text(query_string))
+        rows = result.fetchall()
+
+        if not rows:
+            logger.info(f"No data found for query: {query_string}")
+            return f"No data found for the given criteria in {table_name}."
+
+        # Format output as a markdown table
+        column_names = result.keys()
+        formatted_results = "| " + " | ".join(column_names) + " |\n"
+        formatted_results += "| " + "---|" * len(column_names) + "\n"
+        for row in rows:
+            formatted_results += "| " + " | ".join(map(str, row)) + " |\n"
+
+        logger.info(f"Query results for {table_name}:\n{formatted_results}")
+        return formatted_results
+
     except Exception as e:
-        logger.exception(f"Error counting records in electricvehicles: {e}")
-        return f"Error getting count: {e}"
+        logger.exception(f"Error executing dynamic query on {table_name}: {e}")
+        return f"Error performing database query: {e}. Please check the query components."
     finally:
         if connection:
             connection.close()
+
+# Removed the old query_electric_vehicles and count_electric_vehicles tools.
+# Their functionality is now covered by query_database.

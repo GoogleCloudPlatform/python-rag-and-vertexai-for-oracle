@@ -21,9 +21,9 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text, inspect, exc
 from sqlalchemy.engine import Connection
 from sqlalchemy.schema import Table, MetaData, Column
-import logging # ADDED: Import logging
+import logging
 
-logger = logging.getLogger(__name__) # ADDED: Get a logger instance for this module
+logger = logging.getLogger(__name__)
 
 # Load values from .env file at the very top to ensure variables are available
 load_dotenv()
@@ -42,149 +42,78 @@ _engine = None # Global engine to reuse connection pool
 _metadata = MetaData() # Global metadata object
 
 
-def get_engine(): # CHANGED: Removed verbose=False argument
+def get_engine():
     """Initializes and returns a SQLAlchemy engine."""
     global _engine
     if _engine is None:
         if not all([DB_USER, DB_PASSWORD, DB_DSN]):
-            logger.error("Database connection details (DB_USER, DB_PASSWORD, DB_DSN) not found in environment variables.") # CHANGED: print to logger.error
+            logger.error("Database connection details (DB_USER, DB_PASSWORD, DB_DSN) not found in environment variables.")
             raise ValueError("Database connection details (DB_USER, DB_PASSWORD, DB_DSN) not found in environment variables.")
         try:
-            # Use the DB_DSN string directly as confirmed working
             database_url = f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_DSN}"
             _engine = create_engine(database_url)
             # Test connection
             with _engine.connect() as connection:
                 connection.execute(text("SELECT 1 FROM DUAL"))
-            logger.info("SQLAlchemy Engine created and connection tested successfully.") # CHANGED: print to logger.info
+            logger.info("SQLAlchemy Engine created and connection tested successfully.")
         except exc.SQLAlchemyError as e:
             _engine = None # Reset engine on failure
-            logger.exception(f"Failed to create SQLAlchemy engine or connect: {e}") # CHANGED: print to logger.exception
+            logger.exception(f"Failed to create SQLAlchemy engine or connect: {e}")
             raise ConnectionError(f"Failed to create SQLAlchemy engine or connect: {e}")
     return _engine
 
-def get_table_reflection(table_name: str) -> Table: # CHANGED: Removed verbose=False argument
+def get_table_reflection(table_name: str) -> Table:
     """
     Reflects a table from the database and returns its SQLAlchemy Table object.
     It uses the specified schema owner and the exact casing of the table_name.
     """
-    engine = get_engine() # No verbose argument passed here
+    engine = get_engine()
     try:
-        # Debugging: Print values before reflection
-        logger.debug(f"Reflecting table '{table_name}' from schema '{TABLE_OWNER_SCHEMA}'") # CHANGED: print to logger.debug
+        logger.debug(f"Reflecting table '{table_name}' from schema '{TABLE_OWNER_SCHEMA}'")
 
-        # The 'schema' argument is crucial here to look for the table in the correct owner's schema
-        # Use the exact table_name as it's now expected to have correct casing (e.g., 'electricvehicles')
-        # Removed .upper() to ensure exact casing is used for reflection
         table = Table(table_name, _metadata, autoload_with=engine, schema=TABLE_OWNER_SCHEMA)
         return table
     except exc.NoSuchTableError:
-        logger.error(f"Table '{table_name}' not found in schema '{TABLE_OWNER_SCHEMA}'.") # CHANGED: raise to logger.error
+        logger.error(f"Table '{table_name}' not found in schema '{TABLE_OWNER_SCHEMA}'.")
         raise ValueError(f"Table '{table_name}' not found in schema '{TABLE_OWNER_SCHEMA}'. "
                          "Please check table name casing and schema owner.")
     except exc.SQLAlchemyError as e:
-        logger.exception(f"Error reflecting table '{table_name}': {e}") # CHANGED: raise to logger.exception
+        logger.exception(f"Error reflecting table '{table_name}': {e}")
         raise RuntimeError(f"Error reflecting table '{table_name}': {e}")
 
-def get_table_schema_string(table_name: str) -> str: # CHANGED: Removed verbose=False argument
+def get_table_schema_string(table_name: str) -> str:
     """Retrieves the schema (column names and types) of a table as a string."""
     try:
-        table = get_table_reflection(table_name) # No verbose argument passed here
+        table = get_table_reflection(table_name)
         schema_info = f"Table: {TABLE_OWNER_SCHEMA}.{table.name}\nColumns:\n"
         for column in table.columns:
             schema_info += f"- {column.name}: {column.type}\n"
         return schema_info
     except (ValueError, RuntimeError) as e:
-        logger.warning(f"Failed to get table schema for '{table_name}': {e}") # CHANGED: return str(e) to logger.warning
+        logger.warning(f"Failed to get table schema for '{table_name}': {e}")
         return str(e)
 
-def execute_read_query(table_name: str, conditions: str = None, limit: int = 5) -> str: # CHANGED: Removed verbose=False argument
-    """
-    Executes a read query on the specified table with optional conditions and limit.
-    Returns results as a formatted string.
-    """
-    engine = get_engine() # No verbose argument passed here
-    connection: Connection = None
-    try:
-        # Reflect the table first to get its structure (important for column names)
-        # Pass the table_name as is, assuming it now has the correct casing (e.g., 'electricvehicles')
-        table = get_table_reflection(table_name) # No verbose argument passed here
-        connection = engine.connect()
-
-        # Build the SELECT statement dynamically
-        select_cols = [c.name for c in table.columns]
-        # IMPORTANT: Use the full qualified table name for queries (e.g., RW_USER.electricvehicles)
-        # Ensure the table.name is used here, which comes from reflection and has correct casing
-        #full_qualified_table_name = f'"{TABLE_OWNER_SCHEMA}"."{table.name}"' # Quote owner and name for case sensitivity
-        full_qualified_table_name = f'{table.name}'
-
-        stmt_template = f"SELECT {', '.join(select_cols)} FROM {full_qualified_table_name}"
-
-        # Add WHERE clause if conditions are provided
-        if conditions:
-            stmt_template += f" WHERE {conditions}"
-
-        # Add LIMIT/ROWNUM for Oracle
-        if limit is not None:
-            if "WHERE" in stmt_template:
-                 stmt = text(f"{stmt_template} AND ROWNUM <= {limit}")
-            else:
-                 stmt = text(f"{stmt_template} WHERE ROWNUM <= {limit}")
-        else:
-            stmt = text(stmt_template) # If no limit, use the basic template
-
-        logger.debug(f"Executing SQL query: {stmt.compile(engine)}") # CHANGED: print to logger.debug
-
-        result = connection.execute(stmt)
-        rows = result.fetchall()
-
-        if not rows:
-            logger.info(f"No data found in '{table_name}' for the given conditions.") # CHANGED: return string to logger.info
-            return f"No data found in '{table_name}' for the given conditions." # Still return string for expected output
-
-        # Format output
-        column_names = result.keys()
-        formatted_results = [", ".join(column_names)] # Header row
-        for row in rows:
-            # Corrected line: Removed extraneous non-English characters
-            formatted_results.append(", ".join(map(str, row)))
-
-        return "\n".join(formatted_results)
-
-    except (ValueError, RuntimeError, exc.SQLAlchemyError) as e:
-        logger.exception(f"Error executing query: {e}") # CHANGED: return string to logger.exception
-        return f"Error executing query: {e}" # Still return string for expected output
-    finally:
-        if connection:
-            connection.close()
-            logger.debug("Database connection closed.") # ADDED: Debug log for closing connection
+# REMOVED: execute_read_query function, as its functionality is now absorbed by query_database
 
 if __name__ == '__main__':
-    # ADDED: Basic logging configuration for when database_utils.py is run directly
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger.info("Running database_utils.py directly for testing.") # ADDED: Info log for direct run
+    logger.info("Running database_utils.py directly for testing.")
 
-    # Simple tests for database_utils
     try:
-        # Use the exact casing that was discovered from inspection
         test_table_name = "electricvehicles"
 
-        logger.info(f"--- Testing get_table_schema_string for {test_table_name} ---") # CHANGED: print to logger.info
+        logger.info(f"--- Testing get_table_schema_string for {test_table_name} ---")
         schema = get_table_schema_string(test_table_name)
-        print(schema) # Keep print for displaying the actual schema output to user
+        print(schema)
 
-        logger.info(f"\n--- Testing execute_read_query for {test_table_name} (first 3 rows) ---") # CHANGED: print to logger.info
-        data = execute_read_query(test_table_name, limit=3)
-        print(data) # Keep print for displaying the actual data output to user
-
-        logger.info(f"\n--- Testing execute_read_query with a condition for {test_table_name} ---") # CHANGED: print to logger.info
-        data_filtered = execute_read_query(test_table_name, conditions="MODEL LIKE 'Tesla%'", limit=2)
-        print(data_filtered) # Keep print for displaying the actual data output to user
-
-        logger.info("\n--- Testing non-existent table ---") # CHANGED: print to logger.info
+        logger.info("\n--- Testing non-existent table ---")
         non_existent_schema = get_table_schema_string("NonExistentTable")
-        print(non_existent_schema) # Keep print for displaying the error string
+        print(non_existent_schema)
+
+        # Note: Direct testing of query_database or aggregate queries
+        # would need to be added here if you want to test database_utils
+        # in isolation after removing execute_read_query.
+        # This block primarily tests schema retrieval now.
 
     except Exception as e:
-        logger.critical(f"Overall test error in database_utils: {e}", exc_info=True) # CHANGED: print to logger.critical with traceback
-
+        logger.critical(f"Overall test error in database_utils: {e}", exc_info=True)
