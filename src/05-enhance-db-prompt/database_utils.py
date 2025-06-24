@@ -69,10 +69,7 @@ def get_table_reflection(table_name: str) -> Table:
 
         # The 'schema' argument is crucial here to look for the table in the correct owner's schema
         # Use the exact table_name as it's now expected to have correct casing (e.g., 'electricvehicles')
-<<<<<<< HEAD
-=======
         # Removed .upper() to ensure exact casing is used for reflection
->>>>>>> 85e188c (Updated coded to move document_store method to its own .py file. Also updated prompt to ensure use of double quotes for Oracle SQL)
         table = Table(table_name, _metadata, autoload_with=engine, schema=TABLE_OWNER_SCHEMA)
         return table
     except exc.NoSuchTableError:
