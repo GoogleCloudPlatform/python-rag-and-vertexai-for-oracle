@@ -2,6 +2,4 @@
     "ELECTRICVEHICLES": "Contains information about electric vehicles registered, including make, model, year, and location data.",
     "CITI_BIKE": "Contains data about Citi Bike trips, including start/end stations, trip duration, and user types.",
     "STOCKQUOTES": "Contains daily stock quotes data, including stock symbol, price, date for various stock ticker symbols."
-    // Add more table entries here as needed.
-    // Ensure table names (keys) match the exact casing as returned by your database.
 }
