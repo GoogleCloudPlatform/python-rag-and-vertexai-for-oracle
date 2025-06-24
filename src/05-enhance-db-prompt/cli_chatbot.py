@@ -26,6 +26,7 @@ def run_chatbot():
     Runs a command-line interface chatbot for interactive questions.
     """
     print("Welcome to the Gemini-powered Chatbot with Database & RAG Tools!")
+    print("You can ask about internal documents or query the 'electricvehicles' table.")
     print("Type 'exit' or 'quit' to end the conversation.")
 
     current_chat_history = []

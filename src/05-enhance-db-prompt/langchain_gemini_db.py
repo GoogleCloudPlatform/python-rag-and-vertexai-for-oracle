@@ -84,9 +84,10 @@ def setup_langchain_agent():
         [
             ("system",
              "You are an AI assistant. You have access to a document store tool and an Oracle Database tool.\n"
-             "When asked about database information, first use the `get_table_schema` tool to understand the table structure of 'ElectricVehicles' if you are unsure or need column names.\n"
-             "Then, use the `query_electric_vehicles` tool to retrieve data from the 'ElectricVehicles' table. "
+             "When asked about database information, first use the `get_table_schema` tool to understand the table structure of 'electricvehicles' (lowercase) if you are unsure or need column names.\n"
+             "Then, use the `query_electric_vehicles` tool to retrieve data from the 'electricvehicles' table. "
              "Provide relevant conditions (e.g., `MODEL = 'Tesla'`) and a `limit` if specified by the user.\n"
+             "Always use the exact table name 'electricvehicles' (all lowercase) for database queries.\n" # Added clarification
              "Use the document store for other internal document questions. If a question is general knowledge, answer directly.\n"
              "Always present tool responses clearly in your answer."
             ),
@@ -158,7 +159,7 @@ if __name__ == '__main__':
     print(f"Bot: {res2}")
 
     print("\n--- Test 3: Question requiring the new Database Tool (Get Schema) ---")
-    user_input3 = "What columns are in the ElectricVehicles table?"
+    user_input3 = "What columns are in the electricvehicles table?" # Updated user input for consistency
     print(f"User: {user_input3}")
     res3, current_chat_history = get_gemini_response(user_input3, current_chat_history)
     print(f"Bot: {res3}")
