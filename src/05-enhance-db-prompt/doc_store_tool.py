@@ -1,3 +1,4 @@
+# doc_store_tool.py
 """
  Copyright 2025 Google LLC
 
@@ -16,6 +17,9 @@
 
 import os
 from langchain.tools import tool
+import logging # ADDED: Import logging
+
+logger = logging.getLogger(__name__) # ADDED: Get a logger instance for this module
 
 # --- Dummy RAG Tool Implementation (Keep as is) ---
 @tool
@@ -23,7 +27,7 @@ def research_document_store(query: str) -> str:
     """
     Searches an internal document store or knowledge base for information.
     """
-    print(f"\n--- Tool Call: research_document_store with query: '{query}' ---")
+    logger.debug(f"Tool Call: research_document_store with query: '{query}'") # CHANGED: print to logger.debug
     query = query.lower()
 
     if "python" in query and "flask" in query:
@@ -38,4 +42,3 @@ def research_document_store(query: str) -> str:
         return "In LangChain, a 'Tool' is an interface that an agent can use to interact with the world. This could be anything from searching the internet, calling a custom API, interacting with a database, or, in the context of RAG, retrieving information from a specific knowledge base. Agents learn to use tools based on their descriptions and the prompt provided."
     else:
         return "No specific information found related to your query in the document store. Please try rephrasing or asking about a different topic."
-

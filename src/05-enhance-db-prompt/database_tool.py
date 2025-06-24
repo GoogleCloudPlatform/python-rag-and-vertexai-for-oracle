@@ -16,9 +16,12 @@
 
 import os
 from langchain.tools import tool
+import logging # ADDED: Import logging
 
 # Import the new database utilities
 from database_utils import get_table_schema_string, execute_read_query
+
+logger = logging.getLogger(__name__) # ADDED: Get a logger instance for this module
 
 @tool
 def get_table_schema(table_name: str) -> str:
@@ -28,9 +31,9 @@ def get_table_schema(table_name: str) -> str:
     or the available columns for filtering.
     Input should be the exact table name, e.g., 'electricvehicles' (lowercase if created with quotes).
     """
-    print(f"\n--- Tool Call: get_table_schema for table: '{table_name}' ---")
+    logger.debug(f"Tool Call: get_table_schema for table: '{table_name}'") # CHANGED: print to logger.debug
     # Pass the table_name as is, assuming the user/LLM provides correct casing
-    return get_table_schema_string(table_name)
+    return get_table_schema_string(table_name) # No 'verbose' arg needed here now
 
 @tool
 def query_electric_vehicles(conditions: str = None, limit: int = 5) -> str:
@@ -46,10 +49,6 @@ def query_electric_vehicles(conditions: str = None, limit: int = 5) -> str:
     # This ensures consistency with how the table is stored in Oracle
     table_name = "electricvehicles" # Use the confirmed lowercase name
 
-    print(f"\n--- Tool Call: query_electric_vehicles with conditions: '{conditions}', limit: {limit} ---")
-    # Set the table name to the exact casing discovered during inspection
-    table_name = "electricvehicles"
-    print(f"Debug: query_electric_vehicles is using table_name: '{table_name}'") # Added debug print
-    return execute_read_query(table_name, conditions, limit)
-
-
+    logger.debug(f"Tool Call: query_electric_vehicles with conditions: '{conditions}', limit: {limit}") # CHANGED: print to logger.debug
+    logger.debug(f"Debug: query_electric_vehicles is using table_name: '{table_name}'") # CHANGED: print to logger.debug
+    return execute_read_query(table_name, conditions, limit) # No 'verbose' arg needed here now
