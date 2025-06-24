@@ -42,9 +42,14 @@ def query_electric_vehicles(conditions: str = None, limit: int = 5) -> str:
     Ensure you know the table schema before constructing complex conditions.
     The table name is 'electricvehicles' (lowercase).
     """
+    # Set the table name to the exact casing discovered during inspection
+    # This ensures consistency with how the table is stored in Oracle
+    table_name = "electricvehicles" # Use the confirmed lowercase name
+
     print(f"\n--- Tool Call: query_electric_vehicles with conditions: '{conditions}', limit: {limit} ---")
     # Set the table name to the exact casing discovered during inspection
     table_name = "electricvehicles"
+    print(f"Debug: query_electric_vehicles is using table_name: '{table_name}'") # Added debug print
     return execute_read_query(table_name, conditions, limit)
 
-# No __main__ block needed here as these are just tool definitions.
+
