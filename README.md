@@ -5,7 +5,7 @@
 #eligible for the [Google Open Source Software Vulnerability Rewards
 #Program](https://bughunters.google.com/open-source-security).
 #
-# genai-db-samples
+# python-rag-and-vertexai-for-oracle
 # Author: Sam Gamare [ Google ]
 # Initiated on: Jun 10, 2025
 
@@ -43,17 +43,17 @@ To get a copy of this project up and running on your local machine, follow these
     **Option A: Using SSH (Recommended)**
     If you have set up your SSH key with GitHub, this method is more secure and generally easier for repeated access.
     ```bash
-    git clone git@github.com:sam-gamare/genai-db-samples.git
+    git clone git@github.com:sam-gamare/python-rag-and-vertexai-for-oracle.git
     ```
 
     **Option B: Using HTTPS**
     If you haven't set up SSH keys, or prefer HTTPS, you can use this method. You might be prompted for your GitHub username and password (or a Personal Access Token if you have 2FA enabled).
     ```bash
-    git clone [https://github.com/sam-gamare/genai-db-samples.git](https://github.com/sam-gamare/genai-db-samples.git)
+    git clone [https://github.com/sam-gamare/python-rag-and-vertexai-for-oracle.git](https://github.com/sam-gamare/python-rag-and-vertexai-for-oracle.git)
     ```
 4.  **Navigate into the cloned directory:**
     ```bash
-    cd genai-db-samples
+    cd python-rag-and-vertexai-for-oracle
     ```
 
 
@@ -86,7 +86,7 @@ pip install oracledb dotenv cx_Oracle -q
 
 Create a file named `.env` in the root of your project directory to store your database connection details securely.
 
-1.  **Create `.env` file**: Open a text editor and create a new file named `.env` in the `genai-db-samples` directory.
+1.  **Create `.env` file**: Open a text editor and create a new file named `.env` in the `python-rag-and-vertexai-for-oracle` directory.
 
 2.  **Add variables**: Copy and paste the following into your `.env` file:
     ```
@@ -122,7 +122,7 @@ Ensure you can log in as the following users in your Oracle Database:
 1.  **Get the data**: Download the electric vehicle population data from the official source:
     [https://catalog.data.gov/dataset/electric-vehicle-population-data](https://catalog.data.gov/dataset/electric-vehicle-population-data)
 
-2.  **Save as CSV**: Make sure to save the downloaded data as a **.csv** file in your `genai-db-samples` directory.
+2.  **Save as CSV**: Make sure to save the downloaded data as a **.csv** file in your `python-rag-and-vertexai-for-oracle` directory.
 
 ### Import Data
 
@@ -232,4 +232,3 @@ This step significantly enhances the database integration by:
     * "How many citi bike ride records do you have ?"
     * "What is the earliest dates you have for Stock Quotes?"
     * "What was the price of QQQ on that date ?"
->>>>>>> d6f69a7dfee12dbaf1632e9a55af3b985640dba3
