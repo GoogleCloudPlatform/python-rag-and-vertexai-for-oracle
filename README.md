@@ -79,6 +79,8 @@ Now that your virtual environment is active, install the necessary Python packag
 pip install langchain-google-vertexai -q
 pip install google-generativeai langchain langchain-google-genai -q
 pip install oracledb dotenv cx_Oracle -q
+pip install sqlalchemy sqlalchemy-utils -q
+
 ```
 
 
@@ -140,7 +142,7 @@ Finally, run the Python script to verify your database connection and confirm th
 
 1.  **Execute the test script**
     ```bash
-    python src/01-db-connection/db_connection_example.py
+    python src/01-db-connection/connect_to_oracle.py
     ```
     This script should connect to your Oracle database using the details from your `.env` file and display a few rows from the `ElectricVehicles` table to the console.
 
@@ -165,12 +167,12 @@ Run the python script to check if we can use VertexAI API using Gemini model and
     ```bash
     python src/03-langchain-gemini-with-data/langchain_gemini_db.py
     ```
-    This script is asking for some basic information to the LLM, like what is the capital of Brazil. This obviously the LLM should know as it has been pre-trained. However we are also going to inject our sample RAG data explicitly. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
+    This script is asking for some basic information to the LLM, very similar to the 02 step above. The key difference is the question about Electric Vehicles.
 
 
 ### Test command line chatbot
 
-Run the python script to check if we can use VertexAI API using Gemini model and also retrieve data from Oracle database. Note for simplicity we have copied all the files explicitly in each sub-example
+Now that we have basics working, lets initiate a chatbot for interactive mode. Run the python script to check if we can use VertexAI API using Gemini model and also retrieve data from Oracle database. Note for simplicity we have copied all the files explicitly in each sub-example
 
 1.  **Execute the test script**
     ```bash
@@ -204,7 +206,6 @@ This step significantly enhances the database integration by:
     Interact with the chatbot. Try asking questions that require database interaction, such as:
     * "What information can you give me about electric vehicles?" (Might trigger schema or initial few rows)
     * "Show me the columns for the ElectricVehicles table."
-<<<<<<< HEAD
     * "Find all electric vehicles made by Nissan."
     * "List 10 electric vehicles with 'LEAF' in their model name."
 =======

@@ -16,10 +16,12 @@
  """
 
 import os
-from langchain_google_vertexai import ChatVertexAI
+#from langchain_google_vertexai import ChatVertexAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+#from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 
 import os
 from dotenv import load_dotenv
@@ -59,9 +61,11 @@ def setup_langchain_agent(verbose_langchain_executor: bool = False):
     project_id = projectid
     location = gcpregion
 
-    llm = ChatVertexAI(
-        model_name="gemini-2.0-flash",
+    #llm = ChatVertexAI(
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
         temperature=0,
+        vertexai=True
         # project=project_id, # Uncomment and set if needed
         # location=location,  # Uncomment and set if needed
     )

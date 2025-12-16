@@ -15,10 +15,11 @@
  """
 
 import os
-from langchain_google_vertexai import ChatVertexAI
+#from langchain_google_vertexai import ChatVertexAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 # from langchain.tools import tool # We will import tools from our new module
 
 import os
@@ -74,11 +75,10 @@ def setup_langchain_agent():
     project_id = projectid
     location = gcpregion
 
-    llm = ChatVertexAI(
-        model_name="gemini-2.0-flash",
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
         temperature=0,
-        # project=project_id, # Uncomment and set if needed
-        # location=location,  # Uncomment and set if needed
+        vertexai=True
     )
 
     # --- KEY CHANGE: Add your new database tool here ---

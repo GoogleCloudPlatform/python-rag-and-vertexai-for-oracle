@@ -33,7 +33,8 @@ def get_oracle_table_schema(table_name: str, schema_owner: str) -> str: # CHANGE
     """
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
-    db_dsn_string = os.getenv("DB_DSN")
+    #db_dsn_string = os.getenv("DB_DSN")
+    db_dsn_string = os.getenv("SQLALCHEMY_URL")
 
     if not all([db_user, db_password, db_dsn_string]):
         logger.error("Error: Missing DB connection details in .env (DB_USER, DB_PASSWORD, DB_DSN).") # CHANGED: return string to logger.error

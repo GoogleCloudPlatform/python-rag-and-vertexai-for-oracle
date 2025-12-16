@@ -1,0 +1,14 @@
+# Google & Vertex AI
+langchain-google-vertexai
+google-generativeai
+langchain
+langchain-google-genai
+langchain-classic
+
+# Database
+oracledb
+python-dotenv
+
+# SQL Toolkit
+sqlalchemy
+sqlalchemy-utils

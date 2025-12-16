@@ -59,8 +59,8 @@ try:
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM ElectricVehicles WHERE ROWNUM <5 ")  # Replace your_table
 
-    for row in cursor:
-        print(row)
+    #for row in cursor:
+    #    print(row)
 
 except oracledb.Error as e:
     print(f"Error: {e}")
