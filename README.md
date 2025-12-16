@@ -149,7 +149,7 @@ Run the python script to check if we can use VertexAI API using Gemini model. We
 
 1.  **Execute the test script**
     ```bash
-    python src/02-langchain-gemini-intro/simple_langchain_gemini.py
+    python src/02-langchain-gemini-intro/langchain_gemini_rag_example.py
     ```
     This script is asking for some basic information to the LLM, like what is the capital of Brazil. This obviously the LLM should know as it has been pre-trained. However we are also going to inject our sample RAG data explicitly. Which means when it encounters a question specific to what our RAG data provides as prompt and answer, the LLM will now leverage the RAG data.
 

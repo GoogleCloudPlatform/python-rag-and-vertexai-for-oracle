@@ -78,7 +78,8 @@ def setup_langchain_agent():
 
 
     llm = ChatVertexAI(
-        model_name="gemini-2.0-flash", # Use model_name for ChatVertexAI
+        #model_name="gemini-2.0-flash", # Use model_name for ChatVertexAI
+        model_name="gemini-2.5-flash", # Use model_name for ChatVertexAI
         temperature=0,
         # project=project_id, # Uncomment and set if needed
         # location=location,  # Uncomment and set if needed

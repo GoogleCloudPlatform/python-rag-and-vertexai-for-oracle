@@ -31,7 +31,7 @@ def run_chatbot():
     Allows dynamic control of verbose output.
     """
     print("Welcome to the Gemini-powered Chatbot with Database & RAG Tools!")
-    print("You can ask about internal documents or query the 'electricvehicles' table.")
+    print("You can ask about internal documents or query one or more tables like 'electricvehicles','citi_bike' or 'stockquotes' table.")
     print("Type 'exit' or 'quit' to end the conversation.")
     print("You can also type 'Turn verbose on' or 'Turn verbose off' to control debug output.")
     print("Verbose: 'on' sets to DEBUG, 'off' sets to ERROR (minimal).") # MODIFIED: Clarified output levels
